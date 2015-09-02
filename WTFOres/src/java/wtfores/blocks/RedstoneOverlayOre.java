@@ -2,63 +2,43 @@ package wtfores.blocks;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import wtfcore.blocks.IAlphaMaskedBlock;
-import wtfcore.items.ItemMetadataSubblock;
-import wtfcore.tweaksmethods.FracMethods;
-import wtfcore.utilities.BlockSets;
-import wtfcore.utilities.OreBlockInfo;
-import wtfores.WTFOresConfig;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import wtfcore.blocks.IAlphaMaskedBlock;
+import wtfores.OreHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class RedstoneOverlayOre extends OverlayOre implements IAlphaMaskedBlock{
 
 	private boolean isLit;
+	RedstoneOverlayOre opposite;
 
-	public RedstoneOverlayOre(Block oreBlock, int parentMeta, int oreLevel,
-			Block stoneBlock, String oreType, String[] stoneNames, String domain) {
+	public RedstoneOverlayOre(Block oreBlock, int parentMeta, int oreLevel, Block stoneBlock, String oreType, String[] stoneNames, String domain, boolean lit) {
 		super(oreBlock, parentMeta, oreLevel, stoneBlock, oreType, stoneNames, domain);
-		if (oreBlock == Blocks.lit_redstone_ore){
+		if (lit){
 			this.setLightLevel(0.67F);
 			this.isLit = true;
+			this.setTickRandomly(true);
+			this.setCreativeTab(null);
 		}
 
 
-	}
-
-	public static Block[] registerOverlaidOre(Block oreBlock, int parentMeta, String oreType, Block stoneBlock, String stoneGeoType, String[] stoneNames, String domain){
-
-		Block[] blockArray = new Block[3];
-		Block blockToRegister= null;
-
-		for (int loop = 2; loop > -1; loop--){
-			String name = oreType+loop+"_"+stoneGeoType;
-
-			blockToRegister = new RedstoneOverlayOre(oreBlock, parentMeta, loop, stoneBlock, "redstone_ore"+loop, stoneNames, domain).setBlockName(name);
-			GameRegistry.registerBlock(blockToRegister, ItemMetadataSubblock.class, name);
-
-			//if (WTFOresConfig.genDenseOres){
-			BlockSets.oreUbifier.put(new OreBlockInfo(oreBlock, parentMeta, stoneBlock, loop), blockToRegister);
-			BlockSets.addOreBlock(blockToRegister, FracMethods.wtforesfrac);
-
-			blockArray[loop] = blockToRegister;
-		}
-		//These are used to set ores of high density- doing this means I can call a negative density from the ubifier map and still get a block
-		BlockSets.oreUbifier.put(new OreBlockInfo(oreBlock, parentMeta, stoneBlock, -1), blockToRegister);
-		BlockSets.oreUbifier.put(new OreBlockInfo(oreBlock, parentMeta, stoneBlock, -2), blockToRegister);
-		BlockSets.oreUbifier.put(new OreBlockInfo(oreBlock, parentMeta, stoneBlock, -3), blockToRegister);
-		return blockArray;
 	}
 
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta){
-		if (WTFOresConfig.enableDenseOres && this.oreLevel < 2){
-			Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo (Blocks.lit_redstone_ore, this.oreMeta, this.stoneBlock, this.oreLevel+1));
-			if (blockToSet != null){
-				world.setBlock(x, y, z, blockToSet, meta, 0);
+		if (OreHelper.enableDenseOres && this.oreLevel > 0){
+			//Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo (Blocks.lit_redstone_ore, this.oreMeta, this.stoneBlock, this.oreLevel+1));
+			if (this.next != null){
+				if(!this.isLit) {
+					world.setBlock(x, y, z, this.opposite.next, meta, 0);
+				}
+				else {
+					world.setBlock(x, y, z, this.next, meta, 0);
+				}
 			}
 		}
 	}
@@ -71,47 +51,54 @@ public class RedstoneOverlayOre extends OverlayOre implements IAlphaMaskedBlock{
     @Override
 	public void onBlockClicked(World p_149699_1_, int p_149699_2_, int p_149699_3_, int p_149699_4_, EntityPlayer p_149699_5_)
     {
-        this.func_150185_e(p_149699_1_, p_149699_2_, p_149699_3_, p_149699_4_);
-        //super.onBlockClicked(p_149699_1_, p_149699_2_, p_149699_3_, p_149699_4_, p_149699_5_);
+        this.setToLit(p_149699_1_, p_149699_2_, p_149699_3_, p_149699_4_);
     }
-    /*
+    
     public void onEntityWalking(World p_149724_1_, int p_149724_2_, int p_149724_3_, int p_149724_4_, Entity p_149724_5_)
     {
-        this.func_150185_e(p_149724_1_, p_149724_2_, p_149724_3_, p_149724_4_);
-        super.onEntityWalking(p_149724_1_, p_149724_2_, p_149724_3_, p_149724_4_, p_149724_5_);
+        this.setToLit(p_149724_1_, p_149724_2_, p_149724_3_, p_149724_4_);
+        //super.onEntityWalking(p_149724_1_, p_149724_2_, p_149724_3_, p_149724_4_, p_149724_5_);
     }
-    */
+    
     @Override
 	public boolean onBlockActivated(World p_149727_1_, int p_149727_2_, int p_149727_3_, int p_149727_4_, EntityPlayer p_149727_5_, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
     {
-        this.func_150185_e(p_149727_1_, p_149727_2_, p_149727_3_, p_149727_4_);
+        this.setToLit(p_149727_1_, p_149727_2_, p_149727_3_, p_149727_4_);
         return super.onBlockActivated(p_149727_1_, p_149727_2_, p_149727_3_, p_149727_4_, p_149727_5_, p_149727_6_, p_149727_7_, p_149727_8_, p_149727_9_);
     }
 
-    private void func_150185_e(World world, int x, int y, int z)
+    private void setToLit(World world, int x, int y, int z)
     {
-        this.func_150186_m(world, x, y, z);
+        this.createParticles(world, x, y, z);
 
-        if (!isLit)
+        if (!this.isLit)
         {
-            Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo(Blocks.lit_redstone_ore, this.oreMeta, this.stoneBlock, this.oreLevel));
-        	world.setBlock(x, y, z, blockToSet, world.getBlockMetadata(x,y,z), 3);
+            world.setBlock(x, y, z, this.opposite, world.getBlockMetadata(x,y,z), 3);
         }
     }
     @Override
 	public void updateTick(World world, int x, int y, int z, Random random)
     {
-        if (isLit)
+        if (this.isLit)
         {
-        	Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo(Blocks.redstone_ore, this.oreMeta, this.stoneBlock, this.oreLevel));
-        	world.setBlock(x, y, z, blockToSet, world.getBlockMetadata(x, y, z), 0);
+        	world.setBlock(x, y, z, this.opposite, world.getBlockMetadata(x, y, z), 0);
         }
         super.updateTick(world, x, y, z, random);
     }
 
+    /**
+     * A randomly called display update to be able to add particles or other items for display
+     */
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(World p_149734_1_, int p_149734_2_, int p_149734_3_, int p_149734_4_, Random p_149734_5_)
+    {
+        if (this.isLit)
+        {
+            this.createParticles(p_149734_1_, p_149734_2_, p_149734_3_, p_149734_4_);
+        }
+    }
 
-
-    private void func_150186_m(World world, int p_150186_2_, int p_150186_3_, int p_150186_4_)
+    private void createParticles(World world, int p_150186_2_, int p_150186_3_, int p_150186_4_)
     {
         Random random = world.rand;
         double d0 = 0.0625D;

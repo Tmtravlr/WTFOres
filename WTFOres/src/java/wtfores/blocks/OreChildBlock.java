@@ -2,11 +2,10 @@ package wtfores.blocks;
 
 import java.util.List;
 import java.util.Random;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -17,24 +16,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.ForgeDirection;
-import wtfcore.WTFCore;
-import wtfcore.utilities.BlockSets;
-import wtfcore.utilities.OreBlockInfo;
+import wtfores.OreHelper;
 import wtfores.WTFOres;
-import wtfores.WTFOresConfig;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class OreChildBlock extends Block {
 
 	public Block oreBlock;
 	public int oreMeta;
 	protected String oreType;
-	protected Block stoneBlock;
+	public Block stoneBlock;
+	protected Block next;
 	protected int oreLevel;
 	protected String[] textureNames;
 	protected String[] parentLocations;
-	protected String[] localizedNames;
 	private boolean shouldFall;
 
 	protected OreChildBlock(Block block, int meta, Block stoneBlock) {
@@ -43,7 +40,7 @@ public class OreChildBlock extends Block {
 		this.oreMeta = meta;
 		this.stoneBlock  = stoneBlock;
 		this.setStepSound(stoneBlock.stepSound);
-		if (stoneBlock == Blocks.sand || stoneBlock == Blocks.gravel){
+		if (stoneBlock instanceof BlockFalling){
 			shouldFall = true;	
 		}
 		if (stoneBlock != Blocks.lit_redstone_ore){
@@ -89,10 +86,10 @@ public class OreChildBlock extends Block {
 
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta){
-		if (WTFOresConfig.enableDenseOres && this.oreLevel < 2){
-			Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo (this.oreBlock, this.oreMeta, this.stoneBlock, this.oreLevel+1));
-			if (blockToSet != null){
-				world.setBlock(x, y, z, blockToSet, meta, 0);
+		if (OreHelper.enableDenseOres && this.oreLevel > 0){
+			//Block blockToSet = BlockSets.oreUbifier.get(new OreBlockInfo (this.oreBlock, this.oreMeta, this.stoneBlock, this.oreLevel+1));
+			if (this.next != null){
+				world.setBlock(x, y, z, this.next, meta, 0);
 			}
 		}
 	}
@@ -112,9 +109,9 @@ public class OreChildBlock extends Block {
 
 	public void onBlockAdded(World world, int x, int y, int z)
 	{
-		WTFCore.log.info("Block added");
+		//WTFCore.log.info("Block added");
 		if (shouldFall){  
-			WTFCore.log.info("Calling update");
+			//WTFCore.log.info("Calling update");
 			world.scheduleBlockUpdate(x, y, z, this, 2);
 		}
 	}
@@ -127,10 +124,10 @@ public class OreChildBlock extends Block {
 
 	public void updateTick(World world, int x, int y, int z, Random random)
 	{
-		WTFCore.log.info("Update tick");
+		//WTFCore.log.info("Update tick");
 		if (shouldFall && !world.isRemote)
 		{
-			WTFCore.log.info("calling drop block");
+			//WTFCore.log.info("calling drop block");
 			this.dropBlock(world, x, y, z);
 		}
 	}
@@ -211,18 +208,19 @@ public class OreChildBlock extends Block {
         return oreBlock.getItemDropped(oreMeta, random, fortune);
     }
     @Override
-	public void breakBlock(World p_149749_1_, int p_149749_2_, int p_149749_3_, int p_149749_4_, Block p_149749_5_, int p_149749_6_)
+	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
     {
-        oreBlock.breakBlock(p_149749_1_, p_149749_2_, p_149749_3_, p_149749_4_, p_149749_5_, oreMeta);
+    	oreBlock.breakBlock(world, x, y, z, block, oreMeta);
     }
     @Override
-	public void dropXpOnBlockBreak(World p_149657_1_, int p_149657_2_, int p_149657_3_, int p_149657_4_, int p_149657_5_){
-    	oreBlock.dropXpOnBlockBreak(p_149657_1_, p_149657_2_, p_149657_3_, p_149657_4_, p_149657_5_);
+    public int getExpDrop(IBlockAccess world, int metadata, int fortune)
+    {
+        return oreBlock.getExpDrop(world, oreMeta, fortune);
     }
     @Override
-	public float getExplosionResistance(Entity p_149638_1_)
+	public float getExplosionResistance(Entity entity)
     {
-        return oreBlock.getExplosionResistance(p_149638_1_);
+        return oreBlock.getExplosionResistance(entity);
     }
     
     @Override
@@ -247,11 +245,6 @@ public class OreChildBlock extends Block {
     @Override
 	public void harvestBlock(World p_149636_1_, EntityPlayer p_149636_2_, int p_149636_3_, int p_149636_4_, int p_149636_5_, int p_149636_6_){
     	oreBlock.harvestBlock(p_149636_1_, p_149636_2_, p_149636_3_, p_149636_4_, p_149636_5_, oreMeta);;
-    }
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerBlockIcons(IIconRegister iconRegister) {
-        oreBlock.registerBlockIcons(iconRegister);
     }
 
     @Override

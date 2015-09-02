@@ -7,10 +7,6 @@ import cpw.mods.fml.common.Loader;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import exterminatorJeff.undergroundBiomes.api.BlockCodes;
-import exterminatorJeff.undergroundBiomes.api.UBAPIHook;
-import exterminatorJeff.undergroundBiomes.api.UBStrataColumn;
-import exterminatorJeff.undergroundBiomes.api.UBStrataColumnProvider;
 
 
 public class UBCOreGen extends VOreGen{
@@ -20,10 +16,11 @@ public class UBCOreGen extends VOreGen{
 	private static int DimensionID = 0;
 
 	protected BlockInfo getUBCStone(World world, int x, int y, int z){
-		UBStrataColumnProvider columnProvider = UBAPIHook.ubAPIHook.dimensionalStrataColumnProvider.ubStrataColumnProvider(DimensionID);
-		UBStrataColumn column = columnProvider.strataColumn(x, z);
-		BlockCodes stoneCode = column.stone(y);
-		return new BlockInfo(stoneCode.block, stoneCode.metadata);
+//		UBStrataColumnProvider columnProvider = UBAPIHook.ubAPIHook.dimensionalStrataColumnProvider.ubStrataColumnProvider(DimensionID);
+//		UBStrataColumn column = columnProvider.strataColumn(x, z);
+//		BlockCodes stoneCode = column.stone(y);
+//		return new BlockInfo(stoneCode.block, stoneCode.metadata);
+		return new BlockInfo(world.getBlock(x, y, z), world.getBlockMetadata(x, y, z));
 	}
 
 	@Override

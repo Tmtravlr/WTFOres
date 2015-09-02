@@ -1,6 +1,7 @@
 package wtfores;
 
 import java.util.HashSet;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -15,10 +16,11 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = WTFOres.modid, name = "WhiskyTangoFox's Ores", version = "1.32", dependencies = "after:UndergroundBiomes;after:TConstructs;required-after:WTFCore@[1.52,);after:WTFTweaks")
+@Mod(modid = WTFOres.modid, name = "WhiskyTangoFox's Ores", version = "1.0T", dependencies = "after:UndergroundBiomes;after:TConstructs;required-after:WTFCore@[1.51,);after:WTFTweaks")
 public class WTFOres {
 
 		public static  final String modid = WTFCore.WTFOres;
@@ -28,13 +30,15 @@ public class WTFOres {
 
 		//@SidedProxy(clientSide="cavebiomes.proxy.CBClientProxy", serverSide="cavebiomes.proxy.CommonProxy")
 		//public static CommonProxy proxy;
+		
+		public static boolean DEBUG = false;
 
 		public static String alphaMaskDomain = "wtfores:textures/blocks/alphamasks/";
 		public static String overlayDomain =   "wtfores:textures/blocks/overlays/";
 
 		public static HashSet<String> orenames = new HashSet<String>();
 
-		public static CreativeTabs oreTab = new CreativeTabs("WTF's Ores")
+		public static CreativeTabs oreTab = new CreativeTabs("wtf_ores")
 		{
 
 			@Override
@@ -62,10 +66,9 @@ public class WTFOres {
 		
 		@EventHandler
 		public void PostInit(FMLPostInitializationEvent postEvent){
-			if (WTFOresConfig.genLangFile){
-				LangWriter.genLangFile(orenames, "WTFOres_en_US.lang");
-			}
-			WorldGenListener.generator = new OreGenTweaked();
+			
+			//WorldGenListener.generator = new OreGenTweaked();
+			GameRegistry.registerWorldGenerator(new OreGenTweaked(), Integer.MAX_VALUE);
 
 		}
 

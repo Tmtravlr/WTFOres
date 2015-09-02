@@ -17,16 +17,10 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10v1.31"
-group= "WTF.WhiskyTangoFox.WTFOres" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "WTFOres"
+version = "1.7.10v1.0T"
+group= "wtfores" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "WTFOres-Tmtravlr"
 
-sourceSets {
-    main {
-java { srcDirs = ["$projectDir/src/java"] }
-resources { srcDirs = ["$projectDir/src/resources"] }
-    }
-}
 minecraft {
     version = "1.7.10-10.13.4.1492-1.7.10"
     runDir = "eclipse"

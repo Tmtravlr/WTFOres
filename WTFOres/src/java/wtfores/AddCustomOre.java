@@ -5,6 +5,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 public class AddCustomOre {
@@ -13,11 +14,11 @@ public class AddCustomOre {
 
 	public static Random random = new Random();
 	public Block oreBlock;
-	public int metadata = 0;
+	public int oreMeta = 0;
 	public String textureName;
 	public int genType = 0;
-
-
+	public int densityLevels = 3;
+	
 
 	private float maxHeightPercent=100F;
 	public void setMaxHeightPercent(int var){
@@ -47,8 +48,16 @@ public class AddCustomOre {
 		}
 	}
 
-
-	public HashSet<BiomeDictionary.Type> abundantBiomeTypes;
+	//Blacklists and whitelists for where this can generate (Added by Tmtravlr)
+	
+	public HashSet<String> biomeBlacklist = new HashSet<String>();
+	public HashSet<String> biomeWhitelist;
+	
+	public HashSet<String> biomeTypeBlacklist = new HashSet<String>();
+	public HashSet<String> biomeTypeWhitelist;
+	
+	public HashSet<Integer> dimensionBlacklist = new HashSet<Integer>();
+	public HashSet<Integer> dimensionWhitelist;
 
 
 	public int getHeight(int surface) {
@@ -70,14 +79,16 @@ public class AddCustomOre {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((abundantBiomeTypes == null) ? 0 : abundantBiomeTypes
-						.hashCode());
+		result = prime * result + ((biomeBlacklist == null) ? 0 : biomeBlacklist.hashCode());
+		result = prime * result + ((biomeWhitelist == null) ? 0 : biomeWhitelist.hashCode());
+		result = prime * result + ((biomeTypeBlacklist == null) ? 0 : biomeTypeBlacklist.hashCode());
+		result = prime * result + ((biomeTypeWhitelist == null) ? 0 : biomeTypeWhitelist.hashCode());
+		result = prime * result + ((dimensionBlacklist == null) ? 0 : dimensionBlacklist.hashCode());
+		result = prime * result + ((dimensionWhitelist == null) ? 0 : dimensionWhitelist.hashCode());
 		result = prime * result + genType;
 		result = prime * result + Float.floatToIntBits(maxHeightPercent);
 		result = prime * result + maxPerChunk;
-		result = prime * result + metadata;
+		result = prime * result + oreMeta;
 		result = prime * result + Float.floatToIntBits(minHeightPercent);
 		result = prime * result + minPerChunk;
 		result = prime * result
@@ -98,10 +109,35 @@ public class AddCustomOre {
 		if (getClass() != obj.getClass())
 			return false;
 		AddCustomOre other = (AddCustomOre) obj;
-		if (abundantBiomeTypes == null) {
-			if (other.abundantBiomeTypes != null)
+		if (biomeBlacklist == null) {
+			if (other.biomeBlacklist != null)
 				return false;
-		} else if (!abundantBiomeTypes.equals(other.abundantBiomeTypes))
+		} else if (!biomeBlacklist.equals(other.biomeBlacklist))
+			return false;
+		if (biomeWhitelist == null) {
+			if (other.biomeWhitelist != null)
+				return false;
+		} else if (!biomeWhitelist.equals(other.biomeWhitelist))
+			return false;
+		if (biomeTypeBlacklist == null) {
+			if (other.biomeTypeBlacklist != null)
+				return false;
+		} else if (!biomeTypeBlacklist.equals(other.biomeTypeBlacklist))
+			return false;
+		if (biomeTypeWhitelist == null) {
+			if (other.biomeTypeWhitelist != null)
+				return false;
+		} else if (!biomeTypeWhitelist.equals(other.biomeTypeWhitelist))
+			return false;
+		if (dimensionBlacklist == null) {
+			if (other.dimensionBlacklist != null)
+				return false;
+		} else if (!dimensionBlacklist.equals(other.dimensionBlacklist))
+			return false;
+		if (dimensionWhitelist == null) {
+			if (other.dimensionWhitelist != null)
+				return false;
+		} else if (!dimensionWhitelist.equals(other.dimensionWhitelist))
 			return false;
 		if (genType != other.genType)
 			return false;
@@ -110,7 +146,7 @@ public class AddCustomOre {
 			return false;
 		if (maxPerChunk != other.maxPerChunk)
 			return false;
-		if (metadata != other.metadata)
+		if (oreMeta != other.oreMeta)
 			return false;
 		if (Float.floatToIntBits(minHeightPercent) != Float
 				.floatToIntBits(other.minHeightPercent))
