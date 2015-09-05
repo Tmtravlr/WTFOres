@@ -118,7 +118,7 @@ public class OverlayOre extends OreChildBlock implements IAlphaMaskedBlock
 				else {
 					stoneNameList[loop] = iconName;
 				}
-				System.out.println(stoneNameList[loop]);
+				//System.out.println(stoneNameList[loop]);
 			}
 			
 			registerOverlaidOre(newOre.oreBlock, newOre.oreMeta, newOre.textureName, stoneInfo.block, name, stoneNameList, domain, newOre.densityLevels);

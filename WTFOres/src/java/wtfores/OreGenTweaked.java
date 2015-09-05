@@ -14,8 +14,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import wtfcore.WTFCore;
 import wtfcore.utilities.BlockInfo;
-import wtfcore.utilities.BlockSets;
-import wtfcore.utilities.OreBlockInfo;
+import wtfores.blocks.OreChildBlock;
 import wtfores.gencores.GenOreProvider;
 import wtfores.gencores.VOreGen;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -61,7 +60,7 @@ public class OreGenTweaked implements IWorldGenerator{
 			if(newOre.dimensionBlacklist.contains(dimension)) {
 				continue;
 			}
-			if(newOre.dimensionWhitelist != null && !newOre.dimensionWhitelist.contains(dimension)) {
+			if(newOre.dimensionWhitelist != null && !newOre.dimensionWhitelist.contains(Integer.valueOf(dimension))) {
 				continue;
 			}
 			
@@ -458,31 +457,37 @@ public class OreGenTweaked implements IWorldGenerator{
 		BlockInfo block;
 		
 		block = new BlockInfo(world.getBlock(x+1, y, z),world.getBlockMetadata(x+1, y, z));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}
 		
 		block = new BlockInfo(world.getBlock(x-1, y, z),world.getBlockMetadata(x-1, y, z));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}
 		
 		block = new BlockInfo(world.getBlock(x, y, z+1),world.getBlockMetadata(x, y, z+1));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}
 		
 		block = new BlockInfo(world.getBlock(x, y, z-1),world.getBlockMetadata(x, y, z-1));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}
 		
 		block = new BlockInfo(world.getBlock(x, y+1, z),world.getBlockMetadata(x, y+1, z));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}
 		
 		block = new BlockInfo(world.getBlock(x, y-1, z),world.getBlockMetadata(x, y-1, z));
+		if(block.block instanceof OreChildBlock) block.block = ((OreChildBlock)block.block).stoneBlock;
 		if(OreHelper.stoneTypes.contains(block)) {
 			return block;
 		}

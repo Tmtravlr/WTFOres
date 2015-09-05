@@ -20,7 +20,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = WTFOres.modid, name = "WhiskyTangoFox's Ores", version = "1.0T", dependencies = "after:UndergroundBiomes;after:TConstructs;required-after:WTFCore@[1.51,);after:WTFTweaks")
+@Mod(modid = WTFOres.modid, name = "WhiskyTangoFox's Ores", version = "1.1T", dependencies = "after:UndergroundBiomes;after:TConstructs;required-after:WTFCore;after:WTFTweaks")
 public class WTFOres {
 
 		public static  final String modid = WTFCore.WTFOres;
@@ -53,13 +53,12 @@ public class WTFOres {
 		@EventHandler
 		public void PreInit(FMLPreInitializationEvent preEvent)
 		{
-			WTFOresConfig.customConfig();
+			
 
 		}
 
 		@EventHandler public void load(FMLInitializationEvent event)
 		{
-			OverlayOre.register();
 			MinecraftForge.ORE_GEN_BUS.register(new VanillOreGenCatcher());
 
 		}
@@ -68,6 +67,8 @@ public class WTFOres {
 		public void PostInit(FMLPostInitializationEvent postEvent){
 			
 			//WorldGenListener.generator = new OreGenTweaked();
+			WTFOresConfig.customConfig();
+			OverlayOre.register();
 			GameRegistry.registerWorldGenerator(new OreGenTweaked(), Integer.MAX_VALUE);
 
 		}

@@ -149,18 +149,18 @@ public class WTFOresConfig {
 
 	public static void parseConfig(String fullOreString){
 		//split it at each ; into an array
-		fullOreString = fullOreString.replaceAll("\\s","");
+		//fullOreString = fullOreString.replaceAll("\\s","");
 		String[] oreStringArray = fullOreString.split(";");
 
 		for (int loop = 0; loop < oreStringArray.length; loop ++){
 			String[] currentString = oreStringArray[loop].split(",");
-
+			
 			AddCustomOre customOre = new AddCustomOre();
-			String overrideTexture = null;
 
-			WTFCore.log.info ("WTF-ores: loading from "+  oreStringArray[loop]);
+			if(WTFOres.DEBUG) WTFCore.log.info ("WTF-ores: loading from "+  oreStringArray[loop]);
 
 			for (int stringLoop = 0; stringLoop < currentString.length; stringLoop++){
+				currentString[stringLoop] = currentString[stringLoop].trim();
 
 				if (currentString[stringLoop].startsWith("oreBlock=")){
 					customOre.oreBlock = GameData.getBlockRegistry().getObject(currentString[stringLoop].substring(9));
@@ -231,8 +231,6 @@ public class WTFOresConfig {
 				//the default required to gen the AddCustomOre is oreBlock, metadata, useTexture, and genType
 				if(WTFOres.DEBUG) WTFCore.log.info("Adding custom ores, block loaded: " +  customOre.oreBlock.getUnlocalizedName());
 				OreHelper.customOres.add(customOre);
-				if (overrideTexture==null){overrideTexture=customOre.textureName;}
-				ClientProxy.registerBlockOverlayOverride(customOre.oreBlock, overrideTexture, "minecraft:stone", customOre.textureName+0, WTFOres.overlayDomain, false);
 			}
 		}
 	}
